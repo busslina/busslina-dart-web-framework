@@ -9,7 +9,6 @@ part 'root_component.dart';
 abstract class Component implements ComponentSideEffectApi {
   Component();
 
-  bool __assembled = false;
   bool _mounted = false;
 
   late final Component _parent;
@@ -18,7 +17,10 @@ abstract class Component implements ComponentSideEffectApi {
   /// The node in which this component will be appended as a child.
   late final Node _parentNode;
 
-  RichNode get asRichNode => ComponentNode(_parent, this);
+  /// The HTML Div node that will contain this [Component] children.
+  late Node _node = HTMLDivElement();
+
+  RichNode get asRichNode => ComponentNode(this);
 
   final _sideEffectData = <Object?>[];
 
@@ -35,29 +37,22 @@ abstract class Component implements ComponentSideEffectApi {
     _dependencyDisposers.clear();
   }
 
-  /// Assembles this component in the widget tree via his parent.
-  void _assemble(Component parent) {
-    if (__assembled) {
-      throw 'Already assembled';
+  // Node build(ComponentHandle use);
+  Iterable<RichNode> build(ComponentHandle use);
+
+  /// Mounts this component in the widget tree via his parent.
+  void _mount(Component parent) {
+    if (_mounted) {
+      throw 'Already mounted';
     }
 
     _parent = parent;
     _capsuleContainer = parent._capsuleContainer;
 
-    __assembled = true;
-  }
+    _parentNode.appendChild(_node);
 
-  // Node build(ComponentHandle use);
-  Iterable<RichNode> build(ComponentHandle use);
-
-  /// Mount component in DOM
-  void _mount() {
-    if (_mounted) {
-      throw 'Already mounted';
-    }
-
-    for (final node in build(_componentHandle)) {
-      node.mount(this);
+    for (final richNode in build(_componentHandle)) {
+      richNode.mount(this);
     }
 
     _mounted = true;
