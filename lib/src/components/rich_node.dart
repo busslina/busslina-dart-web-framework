@@ -1,5 +1,6 @@
 part of 'component.dart';
 
+/// Represents a node in the [Component] tree.
 sealed class RichNode {
   RichNode();
 
@@ -10,6 +11,7 @@ sealed class RichNode {
   void mount(Component parent);
 }
 
+/// Represents a [Component] node in the Component tree.
 class ComponentNode extends RichNode {
   ComponentNode(this.component);
 
@@ -21,6 +23,7 @@ class ComponentNode extends RichNode {
   }
 }
 
+/// Represents a leaf HTML node.
 class DomNode extends RichNode {
   DomNode(this.node);
 
