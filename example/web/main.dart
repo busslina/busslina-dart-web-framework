@@ -8,9 +8,6 @@ void main() {
   Node? child;
 
   Timer.periodic(const Duration(seconds: 1), (_) {
-    // rootDiv.text = 'Text set at ${DateTime.now()}';
-
-    // final node = document.createElement('div');
     final newNode = HTMLLabelElement();
     newNode.text = 'Text set at ${DateTime.now()}';
 

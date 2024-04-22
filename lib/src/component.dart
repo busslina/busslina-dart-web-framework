@@ -1,3 +1,0 @@
-abstract class Component {
-  Component();
-}
