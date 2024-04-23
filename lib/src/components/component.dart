@@ -37,7 +37,7 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
   // late final Node _parentNode;
 
   /// The HTML Div node that will contain this [Component] children.
-  final node = HTMLDivElement();
+  late final node = HTMLDivElement()..id = '\$component\$-$name';
 
   RichNode get richNode => ComponentNode(this);
 
@@ -176,9 +176,21 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
       if (isCanceled) return;
     }
 
+    print('Component.rebuild() -- $name');
+
     // if (!_mountingChildrenCapsule) {
     //   _mountChildrenCapsule(_componentHandle);
     // }
+
+    // final container = _capsuleContainer;
+
+    // container.runTransaction(() {
+    //   container._sideEffectMutationsToCallInTxn!.add(() {
+    //     var isCanceled = false;
+    //     sideEffectMutation?.call(() => isCanceled = true);
+    //     return isCanceled ? null : this;
+    //   });
+    // });
   }
 
   @override
@@ -249,11 +261,28 @@ ComponentCapsule<void> Function(Component) getComponentCapsule(
               },
             );
 
-            component.build(use);
+            // component.build(use);
 
             for (final child in component.build(use)) {
               child._setParent(component);
-              getRichNodeCapsule(use)(child)(use);
+
+              // final aa = child;
+
+              final ComponentHandle childHandle;
+
+              // Child component (uses own handle)
+              if (child.isComponent) {
+                final childComponent = (child.asComponent.component
+                  .._capsuleContainer = component._capsuleContainer);
+                childHandle = childComponent._componentHandle;
+              }
+
+              // Child DOM (uses parent handle)
+              else {
+                childHandle = use;
+              }
+
+              getRichNodeCapsule(use)(child)(childHandle);
             }
           });
 }
