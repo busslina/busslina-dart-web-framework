@@ -1,6 +1,3 @@
-import 'dart:js_interop';
-
-import 'package:busslina_dart_web_framework/lib.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rearch/rearch.dart';
 import 'package:web/web.dart';
@@ -129,24 +126,24 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
   //   _mountingChildrenCapsule = false;
   // }
 
-  void _unmount() {
-    debug('_unmount()');
+  // void _unmount() {
+  //   debug('_unmount()');
 
-    if (!_mounted) {
-      throw 'Not mounted yet';
-    }
+  //   if (!_mounted) {
+  //     throw 'Not mounted yet';
+  //   }
 
-    if (_unmounted) {
-      throw 'Already unmounted';
-    }
+  //   if (_unmounted) {
+  //     throw 'Already unmounted';
+  //   }
 
-    _parentNode.removeChild(node);
+  //   _parentNode.removeChild(node);
 
-    _mounted = false;
-    _unmounted = true;
+  //   _mounted = false;
+  //   _unmounted = true;
 
-    _dispose();
-  }
+  //   _dispose();
+  // }
 
   void _dispose() {
     if (!_unmounted) {
@@ -196,10 +193,10 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
   void runTransaction(void Function() sideEffectTransaction) =>
       _capsuleContainer.runTransaction(sideEffectTransaction);
 
-  // late final _componentHandle = _ComponentHandleImpl(
-  //   this,
-  //   _capsuleContainer,
-  // );
+  late final _componentHandle = _ComponentHandleImpl(
+    this,
+    _capsuleContainer,
+  );
 }
 
 Capsule<void> Function(RichNode) getRichNodeCapsule(
@@ -232,7 +229,7 @@ Capsule<void> Function(Component) getComponentCapsule(
   return (component) => componentCapsules.putIfAbsent(
       component,
       () => (use) {
-            final firstBuild = use.previous(false) ?? true;
+            // final firstBuild = use.previous(false) ?? true;
 
             void debug(String msg) =>
                 print('Capsule (Component) -- ${component.name} -- $msg');
@@ -243,12 +240,12 @@ Capsule<void> Function(Component) getComponentCapsule(
             }
 
             final parentNode = component._parentNode;
-            final previousParentNode = use.previous(parentNode);
-            final parentEquals = parentNode.isEqualNode(previousParentNode);
+            // final previousParentNode = use.previous(parentNode);
+            // final parentEquals = parentNode.isEqualNode(previousParentNode);
 
             final node = component.node;
-            final previousNode = use.previous(node);
-            final equals = node.isEqualNode(previousNode);
+            // final previousNode = use.previous(node);
+            // final equals = node.isEqualNode(previousNode);
 
             // debug('Equals I: ${parentNode.isEqualNode(previousParentNode)}');
             // debug('Equals II: $equals');
@@ -293,20 +290,20 @@ Capsule<void> Function(DomNode) getDomCapsule(
   return (dom) => domCapsules.putIfAbsent(
       dom,
       () => (use) {
-            final firstBuild = use.previous(false) ?? true;
+            // final firstBuild = use.previous(false) ?? true;
 
             void debug(String msg) =>
                 print('Capsule (${dom.typeAsString}) -- ${dom.name} -- $msg');
 
             final current = dom.asDom;
 
-            final parentNode = current._parent.node;
-            final previousParentNode = use.previous(parentNode);
-            final parentEquals = parentNode.isEqualNode(previousParentNode);
+            // final parentNode = current._parent.node;
+            // final previousParentNode = use.previous(parentNode);
+            // final parentEquals = parentNode.isEqualNode(previousParentNode);
 
             final node = current.node;
-            final previousNode = use.previous(node);
-            final equals = node.isEqualNode(previousNode);
+            // final previousNode = use.previous(node);
+            // final equals = node.isEqualNode(previousNode);
 
             // debug('Previous: $previousNode');
             // debug('Current: $node');

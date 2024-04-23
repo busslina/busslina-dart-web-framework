@@ -6,8 +6,9 @@ import 'package:rearch/rearch.dart';
 import 'package:web/web.dart';
 
 void main() {
-  Root()
-      .mount((document.querySelector('#app_root')! as HTMLElement)..fullSize());
+  Root().mount(
+    (document.querySelector('#app_root')! as HTMLElement)..fullSize(),
+  );
 }
 
 class Root extends RootComponent {
@@ -55,11 +56,6 @@ class Header extends Component {
             ..text = 'Busslina Dart Web Framework'
             ..textAlignCenter())
           .richNode,
-
-      // (HTMLLabelElement()
-      //       ..text = 'Loading 1: ${loading.value}'
-      //       ..textAlignCenter())
-      //     .richNode,
 
       _InnerHeader(count: counter.value).richNode,
     ];

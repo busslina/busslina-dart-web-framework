@@ -1,8 +1,8 @@
 part of 'component.dart';
 
 /// Represents a node in the [Component] tree.
-sealed class RichNode {
-// sealed class RichNode with EquatableMixin {
+// sealed class RichNode {
+sealed class RichNode with EquatableMixin {
   RichNode();
 
   bool get isComponent => this is ComponentNode;
