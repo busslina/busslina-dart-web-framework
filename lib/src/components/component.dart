@@ -245,6 +245,11 @@ Capsule<void> Function(RichNode) getComponentCapsule(
             else {
               final current = component.asDom;
               final node = current.node;
+
+              if (node is HTMLLabelElement) {
+                debug('Text: ${node.textContent}');
+              }
+
               current._parent.node.appendChild(node);
             }
           });
