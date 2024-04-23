@@ -1,4 +1,5 @@
 import 'package:busslina_dart_web_framework/lib.dart';
+import 'package:rearch/rearch.dart';
 
 import 'package:web/web.dart';
 
@@ -15,7 +16,10 @@ class Root extends RootComponent {
   }
 
   @override
-  Iterable<RichNode> build(ComponentHandle use) {
+  String get name => 'Root';
+
+  @override
+  Iterable<RichNode> build(CapsuleHandle use) {
     return [
       Header().richNode,
     ];
@@ -24,7 +28,10 @@ class Root extends RootComponent {
 
 class Header extends Component {
   @override
-  Iterable<RichNode> build(ComponentHandle use) {
+  String get name => 'Header';
+
+  @override
+  Iterable<RichNode> build(CapsuleHandle use) {
     return [
       _InnerHeader().richNode,
     ];
@@ -33,7 +40,10 @@ class Header extends Component {
 
 class _InnerHeader extends Component {
   @override
-  Iterable<RichNode> build(ComponentHandle use) {
+  String get name => 'Inner header';
+
+  @override
+  Iterable<RichNode> build(CapsuleHandle use) {
     return [
       // Title
       (HTMLHeadingElement.h1()

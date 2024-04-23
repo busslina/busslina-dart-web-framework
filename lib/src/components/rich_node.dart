@@ -9,6 +9,8 @@ sealed class RichNode {
   bool get isDom => this is DomNode;
 
   void mount(Component parent);
+
+  void unmount(Component parent);
 }
 
 /// Represents a [Component] node in the Component tree.
@@ -21,6 +23,11 @@ class ComponentNode extends RichNode {
   void mount(Component parent) {
     component._mount(parent);
   }
+
+  @override
+  void unmount(Component parent) {
+    component.unmount();
+  }
 }
 
 /// Represents a leaf HTML node.
@@ -32,5 +39,10 @@ class DomNode extends RichNode {
   @override
   void mount(Component parent) {
     parent.node.appendChild(node);
+  }
+
+  @override
+  void unmount(Component parent) {
+    parent.node.removeChild(node);
   }
 }

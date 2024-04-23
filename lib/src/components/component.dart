@@ -1,3 +1,4 @@
+import 'package:busslina_dart_web_framework/lib.dart';
 import 'package:rearch/rearch.dart';
 import 'package:web/web.dart';
 
@@ -8,7 +9,13 @@ part 'root_component.dart';
 abstract class Component implements ComponentSideEffectApi {
   Component();
 
+  String get name;
+
   bool _mounted = false;
+
+  bool _unmounted = false;
+
+  bool _disposed = false;
 
   /// Set on [_mount] except for the root component.
   late final CapsuleContainer _capsuleContainer;
@@ -51,13 +58,17 @@ abstract class Component implements ComponentSideEffectApi {
   // }
 
   // Node build(ComponentHandle use);
-  Iterable<RichNode> build(ComponentHandle use);
-  // Iterable<RichNode> build(CapsuleHandle use);
+  // Iterable<RichNode> build(ComponentHandle use);
+  Iterable<RichNode> build(CapsuleHandle use);
 
   /// Mounts this component in the widget tree via his parent.
   void _mount(Component parent) {
     if (_mounted) {
       throw 'Already mounted';
+    }
+
+    if (_unmounted) {
+      throw 'Cannot mount. already unmounted';
     }
 
     _parent = parent;
@@ -69,27 +80,92 @@ abstract class Component implements ComponentSideEffectApi {
     _parentNode.appendChild(node);
 
     // for (final richNode in build(_componentHandle)) {
-    for (final richNode in build(_componentHandle)) {
-      richNode.mount(this);
-    }
+    // for (final richNode in _capsuleContainer.read(build)) {
+    //   richNode.mount(this);
+    // }
+
+    _capsuleContainer.read(_mountChildrenCapsule);
 
     _mounted = true;
   }
 
-  // void Function(Component) _renderCapsule(ComponentHandle use) {
-  //   final a = use.value<Component, >();
+  void unmount() {
+    if (_mounted) {
+      throw 'Not mounted yet';
+    }
 
-  //   final firstBuild = use.previous(false) ?? true;
+    if (_unmounted) {
+      throw 'Already unmounted';
+    }
 
-  //   final childNodes = build(use);
+    _parentNode.removeChild(node);
 
-  //   return (parent) {};
-  // }
+    _mounted = false;
+    _unmounted = true;
+
+    _dispose();
+  }
+
+  // void Function(CapsuleHandle use) get _parentMountCapsule;
+
+  void _mountChildrenCapsule(CapsuleHandle use) {
+    debug('_mountCapsule() -- 1');
+
+    final children = build(use);
+    final prevChildren = use.previous(children);
+
+    debug(
+        '_mountCapsule() -- 2 -- ${children.length} -- ${prevChildren?.length}');
+
+    // Unmounting previous children
+    if (prevChildren != null) {
+      for (final child in prevChildren) {
+        child.unmount(this);
+      }
+    }
+
+    debug('_mountCapsule() -- 3');
+
+    // Mounting children
+    for (final child in children) {
+      child.mount(this);
+    }
+
+    debug('_mountCapsule() -- 4');
+  }
+
+  void _dispose() {
+    if (!_unmounted) {
+      throw 'Cannot dispose before unmount';
+    }
+
+    if (_disposed) {
+      throw 'Already disposed';
+    }
+
+    for (final listener in _disposeListeners) {
+      listener();
+    }
+
+    _clearDependencies();
+
+    // Clean up after any side effects to avoid possible leaks
+    _disposeListeners.clear();
+
+    _disposed = true;
+  }
 
   @override
-  void rebuild(
-      [void Function(void Function() cancelRebuild)? sideEffectMutation]) {
-    // TODO: implement rebuild
+  void rebuild([
+    void Function(void Function() cancelRebuild)? sideEffectMutation,
+  ]) {
+    if (sideEffectMutation != null) {
+      var isCanceled = false;
+      sideEffectMutation(() => isCanceled = true);
+      if (isCanceled) return;
+    }
+
+    // _markNeedsBuild();
   }
 
   @override
@@ -101,9 +177,8 @@ abstract class Component implements ComponentSideEffectApi {
       _disposeListeners.remove(callback);
 
   @override
-  void runTransaction(void Function() sideEffectTransaction) {
-    // TODO: implement runTransaction
-  }
+  void runTransaction(void Function() sideEffectTransaction) =>
+      _capsuleContainer.runTransaction(sideEffectTransaction);
 
   // ComponentTreeController componentTreeCapsule(CapsuleHandle use) {
   //   return ComponentTreeController();
