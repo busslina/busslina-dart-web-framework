@@ -28,7 +28,8 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
   late final CapsuleContainer _capsuleContainer;
 
   /// Parent component. Set on [_mount].
-  late final Component _parent;
+  // late final Component _parent;
+  late Component _parent;
 
   Node get _parentNode => _parent.node;
 
@@ -230,9 +231,10 @@ Capsule<void> Function(RichNode) getComponentCapsule(
               final children = use(current.build);
 
               for (final child in children) {
-                if (firstBuild) {
-                  child._setParent(current);
-                }
+                // if (firstBuild) {
+                //   child._setParent(current);
+                // }
+                child._setParent(current);
                 use(getComponentCapsule)(child)(use);
               }
             }

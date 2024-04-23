@@ -86,6 +86,13 @@ class _InnerHeader extends Component {
   final int count;
 
   @override
+  // TODO: implement props
+  List<Object?> get props => [
+        ...super.props,
+        count,
+      ];
+
+  @override
   String get name => 'Inner header';
 
   @override
