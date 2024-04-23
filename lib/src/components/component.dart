@@ -10,7 +10,10 @@ abstract class Component implements ComponentSideEffectApi {
 
   bool _mounted = false;
 
+  /// Set on [_mount] except for the root component.
   late final CapsuleContainer _capsuleContainer;
+
+  /// Parent component. Set on [_mount].
   late final Component _parent;
 
   Node get _parentNode => _parent.node;
@@ -63,6 +66,16 @@ abstract class Component implements ComponentSideEffectApi {
 
     _mounted = true;
   }
+
+  // void Function(Component) _renderCapsule(ComponentHandle use) {
+  //   final a = use.value<Component, >();
+
+  //   final firstBuild = use.previous(false) ?? true;
+
+  //   final childNodes = build(use);
+
+  //   return (parent) {};
+  // }
 
   @override
   void rebuild(
