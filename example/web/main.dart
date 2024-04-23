@@ -21,7 +21,8 @@ class Root extends RootComponent {
   String get name => 'Root';
 
   @override
-  Iterable<RichNode> build(CapsuleHandle use) {
+  // Iterable<RichNode> build(CapsuleHandle use) {
+  Iterable<RichNode> build(ComponentHandle use) {
     final expandedMode = use.data(true);
 
     use.callonce(() {
@@ -49,7 +50,8 @@ class Header extends Component {
   String get name => 'Header';
 
   @override
-  Iterable<RichNode> build(CapsuleHandle use) {
+  // Iterable<RichNode> build(CapsuleHandle use) {
+  Iterable<RichNode> build(ComponentHandle use) {
     // Expanded mode
     if (expandedMode) {
       final counter = use.data(1);
@@ -86,7 +88,7 @@ class _InnerHeader extends Component {
   String get name => 'Inner header';
 
   @override
-  Iterable<RichNode> build(CapsuleHandle use) {
+  Iterable<RichNode> build(ComponentHandle use) {
     // final counter = use.data(1);
 
     // use.effect(

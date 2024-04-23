@@ -52,7 +52,8 @@ abstract class Component implements ComponentSideEffectApi {
     _dependencyDisposers.clear();
   }
 
-  Iterable<RichNode> build(CapsuleHandle use);
+  // Iterable<RichNode> build(CapsuleHandle use);
+  Iterable<RichNode> build(ComponentHandle use);
 
   /// Mounts this component in the widget tree via his parent.
   void _mount(Component parent) {
@@ -74,33 +75,14 @@ abstract class Component implements ComponentSideEffectApi {
 
     _parentNode.appendChild(node);
 
-    _capsuleContainer.read(_mountChildrenCapsule);
+    // _capsuleContainer.read(_mountChildrenCapsule);
+    _mountChildrenCapsule(_componentHandle);
 
     _mounted = true;
   }
 
-  void _unmount() {
-    debug('_unmount()');
-
-    if (!_mounted) {
-      throw 'Not mounted yet';
-    }
-
-    if (_unmounted) {
-      throw 'Already unmounted';
-    }
-
-    _parentNode.removeChild(node);
-
-    _mounted = false;
-    _unmounted = true;
-
-    _dispose();
-  }
-
-  // void Function(CapsuleHandle use) get _parentMountCapsule;
-
-  void _mountChildrenCapsule(CapsuleHandle use) {
+  // void _mountChildrenCapsule(CapsuleHandle use) {
+  void _mountChildrenCapsule(ComponentHandle use) {
     debug('_mountChildrenCapsule() -- 1');
 
     final children = build(use);
@@ -124,6 +106,25 @@ abstract class Component implements ComponentSideEffectApi {
     }
 
     debug('_mountChildrenCapsule() -- 4');
+  }
+
+  void _unmount() {
+    debug('_unmount()');
+
+    if (!_mounted) {
+      throw 'Not mounted yet';
+    }
+
+    if (_unmounted) {
+      throw 'Already unmounted';
+    }
+
+    _parentNode.removeChild(node);
+
+    _mounted = false;
+    _unmounted = true;
+
+    _dispose();
   }
 
   void _dispose() {
@@ -157,6 +158,8 @@ abstract class Component implements ComponentSideEffectApi {
       if (isCanceled) return;
     }
 
+    debug('rebuild() -- Misssing implementation');
+
     // _markNeedsBuild();
   }
 
@@ -176,10 +179,15 @@ abstract class Component implements ComponentSideEffectApi {
   //   return ComponentTreeController();
   // }
 
-  ComponentHandle get _componentHandle => _ComponentHandleImpl(
-        this,
-        _capsuleContainer,
-      );
+  // ComponentHandle get _componentHandle => _ComponentHandleImpl(
+  //       this,
+  //       _capsuleContainer,
+  //     );
+
+  late final _componentHandle = _ComponentHandleImpl(
+    this,
+    _capsuleContainer,
+  );
 }
 
 class ComponentTreeController {
