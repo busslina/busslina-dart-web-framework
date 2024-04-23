@@ -178,6 +178,10 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
 
     print('Component.rebuild() -- $name');
 
+    // _capsuleContainer.read(getRichNodeCapsule)();
+
+    // getRichNodeCapsule(_componentHandle)(richNode);
+
     // if (!_mountingChildrenCapsule) {
     //   _mountChildrenCapsule(_componentHandle);
     // }
@@ -263,8 +267,6 @@ ComponentCapsule<void> Function(Component) getComponentCapsule(
 
             for (final child in component.build(use)) {
               child._setParent(component);
-
-              // final aa = child;
 
               final ComponentHandle childHandle;
 
