@@ -253,21 +253,30 @@ Capsule<void> Function(Component) getComponentCapsule(
             // debug('Equals I: ${parentNode.isEqualNode(previousParentNode)}');
             // debug('Equals II: $equals');
 
-            if (firstBuild) {
-              debug('1');
-              parentNode.appendChild(node);
-            } else if (!equals) {
-              if (parentEquals) {
-                debug('2');
-                parentNode.replaceChild(node, previousNode!);
-              } else {
-                debug('3');
-                previousParentNode!.removeChild(previousNode!);
+            // if (firstBuild) {
+            //   debug('1');
+            //   parentNode.appendChild(node);
+            // } else if (!equals) {
+            //   if (parentEquals) {
+            //     debug('2');
+            //     parentNode.replaceChild(node, previousNode!);
+            //   } else {
+            //     debug('3');
+            //     previousParentNode!.removeChild(previousNode!);
+            //     parentNode.appendChild(node);
+            //   }
+            // }
+
+            use.effect(
+              () {
                 parentNode.appendChild(node);
-              }
-            }
+                return () => parentNode.removeChild(node);
+              },
+            );
 
             final children = use(component.build);
+
+            debug('Children: ${children.length}');
 
             for (final child in children) {
               child._setParent(component);
@@ -304,18 +313,28 @@ Capsule<void> Function(DomNode) getDomCapsule(
             // debug('Equals I: $parentEquals');
             // debug('Equals II: $equals');
 
-            if (firstBuild) {
-              debug('1');
-              current._parent.node.appendChild(node);
-            } else if (!equals) {
-              if (parentEquals) {
-                debug('2');
-                current._parent.node.replaceChild(node, previousNode!);
-              } else {
-                debug('3');
-                previousParentNode!.removeChild(previousNode!);
+            // previousParentNode?.removeChild(previousNode!);
+            // current._parent.node.appendChild(node);
+
+            // if (firstBuild) {
+            //   debug('1');
+            //   current._parent.node.appendChild(node);
+            // } else if (!equals) {
+            //   if (parentEquals) {
+            //     debug('2');
+            //     current._parent.node.replaceChild(node, previousNode!);
+            //   } else {
+            //     debug('3');
+            //     previousParentNode!.removeChild(previousNode!);
+            //     current._parent.node.appendChild(node);
+            //   }
+            // }
+
+            use.effect(
+              () {
                 current._parent.node.appendChild(node);
-              }
-            }
+                return () => current._parent.node.removeChild(node);
+              },
+            );
           });
 }

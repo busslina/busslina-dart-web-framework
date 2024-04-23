@@ -58,7 +58,7 @@ class Header extends Component {
 
       use.effect(
         () {
-          return Timer.periodic(const Duration(seconds: 10), (_) {
+          return Timer.periodic(const Duration(seconds: 15), (_) {
             counter.value++;
             // print('Counter: ${counter.value}');
             // rebuilder();
