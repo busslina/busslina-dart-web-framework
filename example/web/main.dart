@@ -3,9 +3,8 @@ import 'package:busslina_dart_web_framework/lib.dart';
 import 'package:web/web.dart';
 
 void main() {
-  final rootComponent = MyRootComponent();
-
-  rootComponent.mount(document.querySelector('#app_root')!);
+  MyRootComponent()
+      .mount((document.querySelector('#app_root')! as HTMLElement)..fullSize());
 }
 
 class MyRootComponent extends RootComponent {
@@ -18,7 +17,21 @@ class MyRootComponent extends RootComponent {
   @override
   Iterable<RichNode> build(ComponentHandle use) {
     return [
+      HeaderComponent().asRichNode,
       DomNode(HTMLLabelElement()..text = 'Hello World'),
+    ];
+  }
+}
+
+class HeaderComponent extends Component {
+  @override
+  Iterable<RichNode> build(ComponentHandle use) {
+    return [
+      DomNode(
+        HTMLHeadingElement.h1()
+          ..text = 'Busslina Dart Web Framework'
+          ..textAlignCenter(),
+      )
     ];
   }
 }

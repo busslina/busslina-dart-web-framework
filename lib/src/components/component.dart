@@ -1,4 +1,3 @@
-import 'package:busslina_dart_web_framework/lib.dart';
 import 'package:rearch/rearch.dart';
 import 'package:web/web.dart';
 
@@ -11,11 +10,13 @@ abstract class Component implements ComponentSideEffectApi {
 
   bool _mounted = false;
 
-  late final Component _parent;
   late final CapsuleContainer _capsuleContainer;
+  late final Component _parent;
+
+  Node get _parentNode => _parent.node;
 
   /// The node in which this component will be appended as a child.
-  late final Node _parentNode;
+  // late final Node _parentNode;
 
   /// The HTML Div node that will contain this [Component] children.
   final node = HTMLDivElement();

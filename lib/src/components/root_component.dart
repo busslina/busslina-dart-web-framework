@@ -13,11 +13,17 @@ abstract class RootComponent extends Component {
 
   static bool _instantiated = false;
 
+  late final Node mountPoint;
+
   @override
   bool get rootNode => true;
 
+  @override
+  // TODO: implement _parentNode
+  Node get _parentNode => mountPoint;
+
   void mount(Node mountPoint) {
-    _parentNode = mountPoint;
+    this.mountPoint = mountPoint;
     _mount(this);
   }
 }
