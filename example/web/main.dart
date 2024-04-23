@@ -129,7 +129,13 @@ class _InnerHeader extends Component {
       // Subtitle
       (HTMLHeadingElement.h3()
             ..text = 'Using ReArch'
-            ..textAlignCenter())
+            ..textAlignCenter()
+            ..onMouseEnter.listen((event) {
+              loading.value = true;
+            })
+            ..onMouseOut.listen((event) {
+              loading.value = false;
+            }))
           .richNode,
 
       // Counter
