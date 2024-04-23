@@ -73,16 +73,24 @@ abstract class Component implements ComponentSideEffectApi {
       _capsuleContainer = parent._capsuleContainer;
     }
 
-    _parentNode.appendChild(node);
-
-    // _capsuleContainer.read(_mountChildrenCapsule);
-    _mountChildrenCapsule(_componentHandle);
+    _render();
 
     _mounted = true;
   }
 
+  void _render() {
+    _parentNode.appendChild(node);
+    // _capsuleContainer.read(_mountChildrenCapsule);
+    _mountChildrenCapsule(_componentHandle);
+  }
+
+  bool _mountingChildrenCapsule = false;
+
   // void _mountChildrenCapsule(CapsuleHandle use) {
   void _mountChildrenCapsule(ComponentHandle use) {
+    _mountingChildrenCapsule = true;
+    // _needsRebuild = false;
+
     debug('_mountChildrenCapsule() -- 1');
 
     final children = build(use);
@@ -106,6 +114,8 @@ abstract class Component implements ComponentSideEffectApi {
     }
 
     debug('_mountChildrenCapsule() -- 4');
+
+    _mountingChildrenCapsule = false;
   }
 
   void _unmount() {
@@ -158,9 +168,9 @@ abstract class Component implements ComponentSideEffectApi {
       if (isCanceled) return;
     }
 
-    debug('rebuild() -- Misssing implementation');
-
-    // _markNeedsBuild();
+    if (!_mountingChildrenCapsule) {
+      _mountChildrenCapsule(_componentHandle);
+    }
   }
 
   @override
@@ -174,15 +184,6 @@ abstract class Component implements ComponentSideEffectApi {
   @override
   void runTransaction(void Function() sideEffectTransaction) =>
       _capsuleContainer.runTransaction(sideEffectTransaction);
-
-  // ComponentTreeController componentTreeCapsule(CapsuleHandle use) {
-  //   return ComponentTreeController();
-  // }
-
-  // ComponentHandle get _componentHandle => _ComponentHandleImpl(
-  //       this,
-  //       _capsuleContainer,
-  //     );
 
   late final _componentHandle = _ComponentHandleImpl(
     this,

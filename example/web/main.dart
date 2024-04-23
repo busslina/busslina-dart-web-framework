@@ -25,11 +25,11 @@ class Root extends RootComponent {
   Iterable<RichNode> build(ComponentHandle use) {
     final expandedMode = use.data(true);
 
-    use.callonce(() {
-      Timer(const Duration(seconds: 15), () {
-        expandedMode.value = false;
-      });
-    });
+    // use.callonce(() {
+    //   Timer(const Duration(seconds: 15), () {
+    //     expandedMode.value = false;
+    //   });
+    // });
 
     return [
       Header(
