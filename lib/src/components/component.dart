@@ -261,8 +261,6 @@ ComponentCapsule<void> Function(Component) getComponentCapsule(
               },
             );
 
-            // component.build(use);
-
             for (final child in component.build(use)) {
               child._setParent(component);
 
