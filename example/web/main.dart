@@ -22,70 +22,46 @@ class Root extends RootComponent {
 
   @override
   Iterable<RichNode> build(CapsuleHandle use) {
-    final expandedMode = use.data(true);
-
-    // use.callonce(() {
-    //   Timer(const Duration(seconds: 15), () {
-    //     expandedMode.value = false;
-    //   });
-    // });
-
     return [
-      Header(
-        expandedMode: expandedMode.value,
-      ).richNode,
+      Header().richNode,
     ];
   }
 }
 
 class Header extends Component {
-  Header({
-    required this.expandedMode,
-  }) : super(key: 'header');
-
-  final bool expandedMode;
+  Header() : super(key: 'header');
 
   @override
   String get name => 'Header';
 
   @override
   Iterable<RichNode> build(CapsuleHandle use) {
-    final loading = use(_loadingCapsule);
+    // final loading = use(_loadingCapsule);
 
-    // Expanded mode
-    if (expandedMode) {
-      final counter = use.data(1);
+    final counter = use.data(1);
 
-      use.effect(
-        () {
-          return Timer.periodic(const Duration(seconds: 15), (_) {
-            counter.value++;
-            // print('Counter: ${counter.value}');
-            // rebuilder();
-          }).cancel;
-        },
-        [],
-      );
+    use.effect(
+      () {
+        return Timer.periodic(const Duration(seconds: 15), (_) {
+          counter.value++;
+        }).cancel;
+      },
+      [],
+    );
 
-      return [
-        // Title
-        (HTMLHeadingElement.h1()
-              ..text = 'Busslina Dart Web Framework'
-              ..textAlignCenter())
-            .richNode,
-
-        (HTMLLabelElement()
-              ..text = 'Loading 1: ${loading.value}'
-              ..textAlignCenter())
-            .richNode,
-
-        _InnerHeader(count: counter.value).richNode,
-      ];
-    }
-
-    // Collapsed mode
     return [
-      (HTMLHeadingElement.h1()..text = 'Collapsed').richNode,
+      // Title
+      (HTMLHeadingElement.h1()
+            ..text = 'Busslina Dart Web Framework'
+            ..textAlignCenter())
+          .richNode,
+
+      // (HTMLLabelElement()
+      //       ..text = 'Loading 1: ${loading.value}'
+      //       ..textAlignCenter())
+      //     .richNode,
+
+      _InnerHeader(count: counter.value).richNode,
     ];
   }
 }
@@ -110,20 +86,6 @@ class _InnerHeader extends Component {
   @override
   Iterable<RichNode> build(CapsuleHandle use) {
     final loading = use(_loadingCapsule);
-    // final counter = use.data(1);
-
-    // use.effect(
-    //   () {
-    //     return Timer.periodic(const Duration(seconds: 10), (_) {
-    //       counter.value++;
-    //     }).cancel;
-    //   },
-    //   [],
-    // );
-
-    // if (count == 3) {
-    //   loading.value = true;
-    // }
 
     return [
       // Subtitle
