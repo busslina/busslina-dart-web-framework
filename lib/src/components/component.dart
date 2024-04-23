@@ -237,21 +237,35 @@ Capsule<void> Function(Component) getComponentCapsule(
             void debug(String msg) =>
                 print('Capsule (Component) -- ${component.name} -- $msg');
 
-            debug('First: $firstBuild');
-
-            // final current = component.component;
-
             // Rebuilding on parent rebuild
             if (!component.rootNode) {
               use(getRichNodeCapsule)(component._parent.richNode);
             }
 
-            use.effect(
-              () {
-                component._parentNode.appendChild(component.node);
-                return () => component._parentNode.removeChild(component.node);
-              },
-            );
+            final parentNode = component._parentNode;
+            final previousParentNode = use.previous(parentNode);
+            final parentEquals = parentNode.isEqualNode(previousParentNode);
+
+            final node = component.node;
+            final previousNode = use.previous(node);
+            final equals = node.isEqualNode(previousNode);
+
+            // debug('Equals I: ${parentNode.isEqualNode(previousParentNode)}');
+            // debug('Equals II: $equals');
+
+            if (firstBuild) {
+              debug('1');
+              parentNode.appendChild(node);
+            } else if (!equals) {
+              if (parentEquals) {
+                debug('2');
+                parentNode.replaceChild(node, previousNode!);
+              } else {
+                debug('3');
+                previousParentNode!.removeChild(previousNode!);
+                parentNode.appendChild(node);
+              }
+            }
 
             final children = use(component.build);
 
@@ -275,33 +289,33 @@ Capsule<void> Function(DomNode) getDomCapsule(
             void debug(String msg) =>
                 print('Capsule (${dom.typeAsString}) -- ${dom.name} -- $msg');
 
-            debug('First: $firstBuild');
-
             final current = dom.asDom;
+
+            final parentNode = current._parent.node;
+            final previousParentNode = use.previous(parentNode);
+            final parentEquals = parentNode.isEqualNode(previousParentNode);
+
             final node = current.node;
-
-            final previousParentNode = use.previous(current._parent.node);
             final previousNode = use.previous(node);
+            final equals = node.isEqualNode(previousNode);
 
-            debug('Previous: $previousNode');
-            debug('Current: $node');
-            debug('Equals: ${node.isEqualNode(previousNode)}');
+            // debug('Previous: $previousNode');
+            // debug('Current: $node');
+            // debug('Equals I: $parentEquals');
+            // debug('Equals II: $equals');
 
             if (firstBuild) {
+              debug('1');
               current._parent.node.appendChild(node);
-            } else if (!node.isEqualNode(previousNode)) {
-              previousParentNode!.removeChild(previousNode!);
-              current._parent.node.appendChild(node);
-              // } else {
-              //   previousParentNode!.removeChild(previousNode!);
-              //   current._parent.node.appendChild(node);
+            } else if (!equals) {
+              if (parentEquals) {
+                debug('2');
+                current._parent.node.replaceChild(node, previousNode!);
+              } else {
+                debug('3');
+                previousParentNode!.removeChild(previousNode!);
+                current._parent.node.appendChild(node);
+              }
             }
-
-            // use.effect(
-            //   () {
-            //     current._parent.node.appendChild(node);
-            //     return () => current._parent.node.removeChild(node);
-            //   },
-            // );
           });
 }

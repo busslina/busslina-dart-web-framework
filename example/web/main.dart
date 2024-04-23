@@ -93,9 +93,7 @@ class Header extends Component {
 class _InnerHeader extends Component {
   _InnerHeader({
     required this.count,
-  }) : super(key: 'inner-header') {
-    print('_InnerHeader.construtor() -- $count');
-  }
+  }) : super(key: 'inner-header');
 
   final int count;
 
@@ -111,8 +109,6 @@ class _InnerHeader extends Component {
 
   @override
   Iterable<RichNode> build(CapsuleHandle use) {
-    print('_InnerHeader.build() -- $count');
-
     final loading = use(_loadingCapsule);
     // final counter = use.data(1);
 
