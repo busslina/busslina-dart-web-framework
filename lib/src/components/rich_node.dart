@@ -31,6 +31,6 @@ class DomNode extends RichNode {
 
   @override
   void mount(Component parent) {
-    parent._node.appendChild(node);
+    parent.node.appendChild(node);
   }
 }

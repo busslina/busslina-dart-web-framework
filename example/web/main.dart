@@ -1,22 +1,24 @@
-import 'dart:async';
+import 'package:busslina_dart_web_framework/lib.dart';
 
 import 'package:web/web.dart';
 
 void main() {
-  final rootDiv = document.querySelector('#app_root')!;
+  final rootComponent = MyRootComponent();
 
-  Node? child;
+  rootComponent.mount(document.querySelector('#app_root')!);
+}
 
-  Timer.periodic(const Duration(seconds: 1), (_) {
-    final newNode = HTMLLabelElement();
-    newNode.text = 'Text set at ${DateTime.now()}';
+class MyRootComponent extends RootComponent {
+  MyRootComponent() {
+    node
+      ..style.backgroundColor = 'red'
+      ..fullSize();
+  }
 
-    if (child == null) {
-      rootDiv.appendChild(newNode);
-    } else {
-      rootDiv.replaceChild(newNode, child!);
-    }
-
-    child = newNode;
-  });
+  @override
+  Iterable<RichNode> build(ComponentHandle use) {
+    return [
+      DomNode(HTMLLabelElement()..text = 'Hello World'),
+    ];
+  }
 }

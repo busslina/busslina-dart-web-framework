@@ -18,7 +18,7 @@ abstract class Component implements ComponentSideEffectApi {
   late final Node _parentNode;
 
   /// The HTML Div node that will contain this [Component] children.
-  late Node _node = HTMLDivElement();
+  final node = HTMLDivElement();
 
   RichNode get asRichNode => ComponentNode(this);
 
@@ -28,6 +28,8 @@ abstract class Component implements ComponentSideEffectApi {
 
   /// Represents a [Set] of functions that remove a dependency on a [Capsule].
   final _dependencyDisposers = <void Function()>{};
+
+  bool get rootNode => false;
 
   /// Clears out the [Capsule] dependencies of this [Component].
   void _clearDependencies() {
@@ -47,9 +49,12 @@ abstract class Component implements ComponentSideEffectApi {
     }
 
     _parent = parent;
-    _capsuleContainer = parent._capsuleContainer;
 
-    _parentNode.appendChild(_node);
+    if (!rootNode) {
+      _capsuleContainer = parent._capsuleContainer;
+    }
+
+    _parentNode.appendChild(node);
 
     for (final richNode in build(_componentHandle)) {
       richNode.mount(this);
