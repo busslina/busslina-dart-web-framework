@@ -26,7 +26,7 @@ class ComponentNode extends RichNode {
 
   @override
   void unmount(Component parent) {
-    component.unmount();
+    component._unmount();
   }
 }
 

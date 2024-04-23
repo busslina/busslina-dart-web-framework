@@ -34,18 +34,6 @@ class Header extends Component {
 
   @override
   Iterable<RichNode> build(CapsuleHandle use) {
-    return [
-      _InnerHeader().richNode,
-    ];
-  }
-}
-
-class _InnerHeader extends Component {
-  @override
-  String get name => 'Inner header';
-
-  @override
-  Iterable<RichNode> build(CapsuleHandle use) {
     final counter = use.data(1);
 
     use.effect(
@@ -56,6 +44,35 @@ class _InnerHeader extends Component {
       },
       [],
     );
+
+    return [
+      _InnerHeader(count: counter.value).richNode,
+    ];
+  }
+}
+
+class _InnerHeader extends Component {
+  _InnerHeader({
+    required this.count,
+  });
+
+  final int count;
+
+  @override
+  String get name => 'Inner header';
+
+  @override
+  Iterable<RichNode> build(CapsuleHandle use) {
+    // final counter = use.data(1);
+
+    // use.effect(
+    //   () {
+    //     return Timer.periodic(const Duration(seconds: 10), (_) {
+    //       counter.value++;
+    //     }).cancel;
+    //   },
+    //   [],
+    // );
 
     return [
       // Title
@@ -72,7 +89,7 @@ class _InnerHeader extends Component {
 
       // Counter
       (HTMLLabelElement()
-            ..text = 'Count: ${counter.value}'
+            ..text = 'Count: $count'
             ..textAlignCenter())
           .richNode,
     ];

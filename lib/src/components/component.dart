@@ -11,6 +11,8 @@ abstract class Component implements ComponentSideEffectApi {
 
   String get name;
 
+  final debugId = DateTime.now().microsecondsSinceEpoch;
+
   bool _mounted = false;
 
   bool _unmounted = false;
@@ -63,6 +65,8 @@ abstract class Component implements ComponentSideEffectApi {
 
   /// Mounts this component in the widget tree via his parent.
   void _mount(Component parent) {
+    debug('_mount()');
+
     if (_mounted) {
       throw 'Already mounted';
     }
@@ -89,8 +93,10 @@ abstract class Component implements ComponentSideEffectApi {
     _mounted = true;
   }
 
-  void unmount() {
-    if (_mounted) {
+  void _unmount() {
+    debug('_unmount()');
+
+    if (!_mounted) {
       throw 'Not mounted yet';
     }
 
@@ -109,13 +115,13 @@ abstract class Component implements ComponentSideEffectApi {
   // void Function(CapsuleHandle use) get _parentMountCapsule;
 
   void _mountChildrenCapsule(CapsuleHandle use) {
-    debug('_mountCapsule() -- 1');
+    debug('_mountChildrenCapsule() -- 1');
 
     final children = build(use);
     final prevChildren = use.previous(children);
 
     debug(
-        '_mountCapsule() -- 2 -- ${children.length} -- ${prevChildren?.length}');
+        '_mountChildrenCapsule() -- 2 -- ${children.length} -- ${prevChildren?.length}');
 
     // Unmounting previous children
     if (prevChildren != null) {
@@ -124,14 +130,14 @@ abstract class Component implements ComponentSideEffectApi {
       }
     }
 
-    debug('_mountCapsule() -- 3');
+    debug('_mountChildrenCapsule() -- 3');
 
     // Mounting children
     for (final child in children) {
       child.mount(this);
     }
 
-    debug('_mountCapsule() -- 4');
+    debug('_mountChildrenCapsule() -- 4');
   }
 
   void _dispose() {
