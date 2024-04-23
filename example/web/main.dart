@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:busslina_dart_web_framework/lib.dart';
 import 'package:rearch/rearch.dart';
 
@@ -44,6 +46,17 @@ class _InnerHeader extends Component {
 
   @override
   Iterable<RichNode> build(CapsuleHandle use) {
+    final counter = use.data(1);
+
+    use.effect(
+      () {
+        return Timer.periodic(const Duration(seconds: 10), (_) {
+          counter.value++;
+        }).cancel;
+      },
+      [],
+    );
+
     return [
       // Title
       (HTMLHeadingElement.h1()
@@ -54,6 +67,12 @@ class _InnerHeader extends Component {
       // Subtitle
       (HTMLHeadingElement.h3()
             ..text = 'Using ReArch'
+            ..textAlignCenter())
+          .richNode,
+
+      // Counter
+      (HTMLLabelElement()
+            ..text = 'Count: ${counter.value}'
             ..textAlignCenter())
           .richNode,
     ];
