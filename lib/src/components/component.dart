@@ -21,7 +21,7 @@ abstract class Component implements ComponentSideEffectApi {
   /// The HTML Div node that will contain this [Component] children.
   final node = HTMLDivElement();
 
-  RichNode get asRichNode => ComponentNode(this);
+  RichNode get richNode => ComponentNode(this);
 
   final _sideEffectData = <Object?>[];
 

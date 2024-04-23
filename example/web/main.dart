@@ -3,12 +3,12 @@ import 'package:busslina_dart_web_framework/lib.dart';
 import 'package:web/web.dart';
 
 void main() {
-  MyRootComponent()
+  RootC()
       .mount((document.querySelector('#app_root')! as HTMLElement)..fullSize());
 }
 
-class MyRootComponent extends RootComponent {
-  MyRootComponent() {
+class RootC extends RootComponent {
+  RootC() {
     node
       ..style.backgroundColor = 'red'
       ..fullSize();
@@ -17,21 +17,33 @@ class MyRootComponent extends RootComponent {
   @override
   Iterable<RichNode> build(ComponentHandle use) {
     return [
-      HeaderComponent().asRichNode,
-      DomNode(HTMLLabelElement()..text = 'Hello World'),
+      HeaderC().richNode,
     ];
   }
 }
 
-class HeaderComponent extends Component {
+class HeaderC extends Component {
   @override
   Iterable<RichNode> build(ComponentHandle use) {
     return [
-      DomNode(
-        HTMLHeadingElement.h1()
-          ..text = 'Busslina Dart Web Framework'
-          ..textAlignCenter(),
-      )
+      _InnerHeaderC().richNode,
     ];
   }
+}
+
+class _InnerHeaderC extends Component {
+  @override
+  Iterable<RichNode> build(ComponentHandle use) => [
+        // Title
+        (HTMLHeadingElement.h1()
+              ..text = 'Busslina Dart Web Framework'
+              ..textAlignCenter())
+            .richNode,
+
+        // Subtitle
+        (HTMLHeadingElement.h3()
+              ..text = 'Using ReArch'
+              ..textAlignCenter())
+            .richNode,
+      ];
 }
