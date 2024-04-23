@@ -196,47 +196,46 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
   //   this,
   //   _capsuleContainer,
   // );
+}
 
-  void buildComponentCapsule(CapsuleHandle use) {
-    final childrenCapsules = use.value(<RichNode, Capsule<void>>{});
+Capsule<void> Function(RichNode) getComponentCapsule(
+  CapsuleHandle use,
+) {
+  final componentCapsules = use.value(<RichNode, Capsule<void>>{});
 
-    // Build self
-    use.callonce(() {
-      _parentNode.appendChild(node);
-    });
+  return (component) => componentCapsules.putIfAbsent(
+      component,
+      () => (use) {
+            print('Capsule -- ${component.name}');
 
-    // Children
-    final currentChildren = build(use);
-    // final previousChildren = use.previous(currentChildren);
-    // final commonChildren = previousChildren == null
-    //     ? <RichNode>[]
-    //     : currentChildren.where((child) => previousChildren.contains(child));
-    // final newChildren = previousChildren == null
-    //     ? currentChildren
-    //     : currentChildren.where((child) => !previousChildren.contains(child));
-    // final removedChildren = previousChildren == null
-    //     ? <RichNode>[]
-    //     : previousChildren.where((child) => !currentChildren.contains(child));
+            // (A) Component node
+            if (component.isComponent) {
+              final current = component.asComponent.component;
 
-    // Capsule<void>? getNullableChildrenNodeCapsule(RichNode child) =>
-    //     childrenCapsules[child];
+              // Rebuilding on parent rebuild
+              if (!current.rootNode) {
+                use(getComponentCapsule)(current._parent.richNode);
+              }
 
-    Capsule<void> getChildrenNodeCapsule(RichNode child) =>
-        childrenCapsules.putIfAbsent(
-            child,
-            () => (use) {
-                  // Rebuilding on parent rebuild
-                  use(buildComponentCapsule);
+              use.effect(
+                () {
+                  current._parentNode.appendChild(current.node);
+                  return () => current._parentNode.removeChild(current.node);
+                },
+              );
 
-                  if (child.isComponent) {
-                    use(child.asComponent.component.buildComponentCapsule);
-                  } else {
-                    node.appendChild(child.asDom.node);
-                  }
-                });
+              final children = use(current.build);
 
-    for (final child in currentChildren) {
-      use(getChildrenNodeCapsule(child));
-    }
-  }
+              for (final child in children) {
+                child._setParent(current);
+                use(getComponentCapsule)(child)(use);
+              }
+            }
+
+            // (B) DOM node
+            else {
+              final current = component.asDom;
+              current._parent.node.appendChild(current.node);
+            }
+          });
 }

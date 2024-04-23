@@ -54,14 +54,14 @@ class Header extends Component {
     if (expandedMode) {
       final counter = use.data(1);
 
-      use.effect(
-        () {
-          return Timer.periodic(const Duration(seconds: 10), (_) {
-            counter.value++;
-          }).cancel;
-        },
-        [],
-      );
+      // use.effect(
+      //   () {
+      //     return Timer.periodic(const Duration(seconds: 10), (_) {
+      //       counter.value++;
+      //     }).cancel;
+      //   },
+      //   [],
+      // );
 
       return [
         _InnerHeader(count: counter.value).richNode,

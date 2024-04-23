@@ -12,9 +12,21 @@ sealed class RichNode with EquatableMixin {
 
   DomNode get asDom => this as DomNode;
 
+  String get name => isComponent
+      ? asComponent.component.name
+      : asDom.node.runtimeType.toString();
+
   // void mount(Component parent);
 
   // void unmount(Component parent);
+
+  void _setParent(Component parent) {
+    if (isComponent) {
+      asComponent.component._parent = parent;
+    } else {
+      asDom._parent = parent;
+    }
+  }
 }
 
 /// Represents a [Component] node in the Component tree.
@@ -42,6 +54,8 @@ class DomNode extends RichNode {
   DomNode(this.node);
 
   final Node node;
+
+  late final Component _parent;
 
   @override
   List<Object?> get props => [node];

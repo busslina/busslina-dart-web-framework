@@ -22,9 +22,14 @@ abstract class RootComponent extends Component {
   Node get _parentNode => mountPoint;
 
   void mount(Node mountPoint) {
+    print('ROOT -- 1');
     this.mountPoint = mountPoint;
     // _mount(this);
     // _capsuleContainer.read(_mountChildrenCapsule);
-    _capsuleContainer.read(buildComponentCapsule);
+    // _capsuleContainer.read(buildComponentCapsule);
+    print('ROOT -- 2');
+    final capsule = _capsuleContainer.read(getComponentCapsule)(richNode);
+    _capsuleContainer.read(capsule);
+    print('ROOT -- 3');
   }
 }
