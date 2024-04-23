@@ -18,11 +18,11 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
 
   final debugId = DateTime.now().microsecondsSinceEpoch;
 
-  bool _mounted = false;
+  // bool _mounted = false;
 
-  bool _unmounted = false;
+  // bool _unmounted = false;
 
-  bool _disposed = false;
+  // bool _disposed = false;
 
   /// Set on [_mount] except for the root component.
   late final CapsuleContainer _capsuleContainer;
@@ -145,26 +145,26 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
   //   _dispose();
   // }
 
-  void _dispose() {
-    if (!_unmounted) {
-      throw 'Cannot dispose before unmount';
-    }
+  // void _dispose() {
+  //   if (!_unmounted) {
+  //     throw 'Cannot dispose before unmount';
+  //   }
 
-    if (_disposed) {
-      throw 'Already disposed';
-    }
+  //   if (_disposed) {
+  //     throw 'Already disposed';
+  //   }
 
-    for (final listener in _disposeListeners) {
-      listener();
-    }
+  //   for (final listener in _disposeListeners) {
+  //     listener();
+  //   }
 
-    _clearDependencies();
+  //   _clearDependencies();
 
-    // Clean up after any side effects to avoid possible leaks
-    _disposeListeners.clear();
+  //   // Clean up after any side effects to avoid possible leaks
+  //   _disposeListeners.clear();
 
-    _disposed = true;
-  }
+  //   _disposed = true;
+  // }
 
   @override
   void rebuild([
@@ -202,9 +202,9 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
 Capsule<void> Function(RichNode) getRichNodeCapsule(
   CapsuleHandle use,
 ) {
-  final componentCapsules = use.value(<RichNode, Capsule<void>>{});
+  final richNodeCapsules = use.value(<RichNode, Capsule<void>>{});
 
-  return (component) => componentCapsules.putIfAbsent(
+  return (component) => richNodeCapsules.putIfAbsent(
       component,
       () => (use) {
             // (A) Component node
@@ -229,10 +229,8 @@ Capsule<void> Function(Component) getComponentCapsule(
   return (component) => componentCapsules.putIfAbsent(
       component,
       () => (use) {
-            // final firstBuild = use.previous(false) ?? true;
-
-            void debug(String msg) =>
-                print('Capsule (Component) -- ${component.name} -- $msg');
+            // void debug(String msg) =>
+            //     print('Capsule (Component) -- ${component.name} -- $msg');
 
             // Rebuilding on parent rebuild
             if (!component.rootNode) {
@@ -240,29 +238,7 @@ Capsule<void> Function(Component) getComponentCapsule(
             }
 
             final parentNode = component._parentNode;
-            // final previousParentNode = use.previous(parentNode);
-            // final parentEquals = parentNode.isEqualNode(previousParentNode);
-
             final node = component.node;
-            // final previousNode = use.previous(node);
-            // final equals = node.isEqualNode(previousNode);
-
-            // debug('Equals I: ${parentNode.isEqualNode(previousParentNode)}');
-            // debug('Equals II: $equals');
-
-            // if (firstBuild) {
-            //   debug('1');
-            //   parentNode.appendChild(node);
-            // } else if (!equals) {
-            //   if (parentEquals) {
-            //     debug('2');
-            //     parentNode.replaceChild(node, previousNode!);
-            //   } else {
-            //     debug('3');
-            //     previousParentNode!.removeChild(previousNode!);
-            //     parentNode.appendChild(node);
-            //   }
-            // }
 
             use.effect(
               () {
@@ -271,11 +247,7 @@ Capsule<void> Function(Component) getComponentCapsule(
               },
             );
 
-            final children = use(component.build);
-
-            debug('Children: ${children.length}');
-
-            for (final child in children) {
+            for (final child in use(component.build)) {
               child._setParent(component);
               use(getRichNodeCapsule)(child)(use);
             }
@@ -290,47 +262,17 @@ Capsule<void> Function(DomNode) getDomCapsule(
   return (dom) => domCapsules.putIfAbsent(
       dom,
       () => (use) {
-            // final firstBuild = use.previous(false) ?? true;
+            // void debug(String msg) =>
+            //     print('Capsule (${dom.typeAsString}) -- ${dom.name} -- $msg');
 
-            void debug(String msg) =>
-                print('Capsule (${dom.typeAsString}) -- ${dom.name} -- $msg');
-
-            final current = dom.asDom;
-
-            // final parentNode = current._parent.node;
-            // final previousParentNode = use.previous(parentNode);
-            // final parentEquals = parentNode.isEqualNode(previousParentNode);
-
-            final node = current.node;
-            // final previousNode = use.previous(node);
-            // final equals = node.isEqualNode(previousNode);
-
-            // debug('Previous: $previousNode');
-            // debug('Current: $node');
-            // debug('Equals I: $parentEquals');
-            // debug('Equals II: $equals');
-
-            // previousParentNode?.removeChild(previousNode!);
-            // current._parent.node.appendChild(node);
-
-            // if (firstBuild) {
-            //   debug('1');
-            //   current._parent.node.appendChild(node);
-            // } else if (!equals) {
-            //   if (parentEquals) {
-            //     debug('2');
-            //     current._parent.node.replaceChild(node, previousNode!);
-            //   } else {
-            //     debug('3');
-            //     previousParentNode!.removeChild(previousNode!);
-            //     current._parent.node.appendChild(node);
-            //   }
-            // }
+            final domNode = dom.asDom;
+            final parentNode = domNode._parent.node;
+            final node = domNode.node;
 
             use.effect(
               () {
-                current._parent.node.appendChild(node);
-                return () => current._parent.node.removeChild(node);
+                parentNode.appendChild(node);
+                return () => parentNode.removeChild(node);
               },
             );
           });
