@@ -39,9 +39,11 @@ class Header extends Component {
   Iterable<RichNode> build(CapsuleHandle use) {
     final counter = use.data(1);
 
+    print('Count: ${counter.value}');
+
     use.effect(
       () {
-        return Timer.periodic(const Duration(seconds: 15), (_) {
+        return Timer.periodic(const Duration(seconds: 5), (_) {
           counter.value++;
         }).cancel;
       },
