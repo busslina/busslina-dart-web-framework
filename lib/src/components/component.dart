@@ -229,8 +229,10 @@ Capsule<void> Function(Component) getComponentCapsule(
   return (component) => componentCapsules.putIfAbsent(
       component,
       () => (use) {
-            // void debug(String msg) =>
-            //     print('Capsule (Component) -- ${component.name} -- $msg');
+            void debug(String msg) =>
+                print('Capsule (Component) -- ${component.name} -- $msg');
+
+            debug('');
 
             // Rebuilding on parent rebuild
             if (!component.rootNode) {
@@ -262,8 +264,10 @@ Capsule<void> Function(DomNode) getDomCapsule(
   return (dom) => domCapsules.putIfAbsent(
       dom,
       () => (use) {
-            // void debug(String msg) =>
-            //     print('Capsule (${dom.typeAsString}) -- ${dom.name} -- $msg');
+            void debug(String msg) =>
+                print('Capsule (${dom.typeAsString}) -- ${dom.name} -- $msg');
+
+            debug('');
 
             final domNode = dom.asDom;
             final parentNode = domNode._parent.node;

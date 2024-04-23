@@ -37,8 +37,6 @@ class Header extends Component {
 
   @override
   Iterable<RichNode> build(CapsuleHandle use) {
-    // final loading = use(_loadingCapsule);
-
     final counter = use.data(1);
 
     use.effect(
@@ -70,7 +68,6 @@ class _InnerHeader extends Component {
   final int count;
 
   @override
-  // TODO: implement props
   List<Object?> get props => [
         ...super.props,
         count,
@@ -81,19 +78,11 @@ class _InnerHeader extends Component {
 
   @override
   Iterable<RichNode> build(CapsuleHandle use) {
-    final loading = use(_loadingCapsule);
-
     return [
       // Subtitle
       (HTMLHeadingElement.h3()
             ..text = 'Using ReArch'
-            ..textAlignCenter()
-            ..onMouseEnter.listen((event) {
-              loading.value = true;
-            })
-            ..onMouseOut.listen((event) {
-              loading.value = false;
-            }))
+            ..textAlignCenter())
           .richNode,
 
       // Counter
@@ -102,14 +91,6 @@ class _InnerHeader extends Component {
             ..textAlignCenter()
             ..block())
           .richNode,
-
-      (HTMLLabelElement()
-            ..text = 'Loading 2: ${loading.value}'
-            ..textAlignCenter()
-            ..block())
-          .richNode,
     ];
   }
 }
-
-ValueWrapper<bool> _loadingCapsule(CapsuleHandle use) => use.data(false);
