@@ -24,6 +24,6 @@ abstract class RootComponent extends Component {
   void mount(Node mountPoint) {
     this.mountPoint = mountPoint;
     final use = _componentHandle;
-    use(use(getRichNodeCapsule)(richNode));
+    getRichNodeCapsule(use)(richNode)(use);
   }
 }

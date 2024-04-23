@@ -10,6 +10,8 @@ abstract interface class ComponentSideEffectRegistrar
   T register<T>(ComponentSideEffect<T> sideEffect);
 }
 
+typedef ComponentCapsule<T> = T Function(ComponentHandle);
+
 abstract interface class ComponentHandle
     implements CapsuleReader, ComponentSideEffectRegistrar {}
 

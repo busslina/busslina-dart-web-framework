@@ -22,7 +22,7 @@ class Root extends RootComponent {
   String get name => 'Root';
 
   @override
-  Iterable<RichNode> build(CapsuleHandle use) {
+  Iterable<RichNode> build(ComponentHandle use) {
     return [
       Header().richNode,
     ];
@@ -36,7 +36,7 @@ class Header extends Component {
   String get name => 'Header';
 
   @override
-  Iterable<RichNode> build(CapsuleHandle use) {
+  Iterable<RichNode> build(ComponentHandle use) {
     final counter = use.data(1);
 
     print('Count: ${counter.value}');
@@ -79,7 +79,7 @@ class _InnerHeader extends Component {
   String get name => 'Inner header';
 
   @override
-  Iterable<RichNode> build(CapsuleHandle use) {
+  Iterable<RichNode> build(ComponentHandle use) {
     return [
       // Subtitle
       (HTMLHeadingElement.h3()

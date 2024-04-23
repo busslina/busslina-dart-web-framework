@@ -61,7 +61,7 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
     _dependencyDisposers.clear();
   }
 
-  Iterable<RichNode> build(CapsuleHandle use);
+  Iterable<RichNode> build(ComponentHandle use);
 
   /// Mounts this component in the widget tree via his parent.
   // void _mount(Component parent) {
@@ -199,32 +199,32 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
   );
 }
 
-Capsule<void> Function(RichNode) getRichNodeCapsule(
-  CapsuleHandle use,
+ComponentCapsule<void> Function(RichNode) getRichNodeCapsule(
+  ComponentHandle use,
 ) {
-  final richNodeCapsules = use.value(<RichNode, Capsule<void>>{});
+  final richNodeCapsules = use.value(<RichNode, ComponentCapsule<void>>{});
 
   return (component) => richNodeCapsules.putIfAbsent(
       component,
       () => (use) {
             // (A) Component node
             if (component.isComponent) {
-              return use(getComponentCapsule)(component.asComponent.component)(
+              return getComponentCapsule(use)(component.asComponent.component)(
                 use,
               );
             }
 
             // (B) DOM node
             else {
-              return use(getDomCapsule)(component.asDom)(use);
+              return getDomCapsule(use)(component.asDom)(use);
             }
           });
 }
 
-Capsule<void> Function(Component) getComponentCapsule(
-  CapsuleHandle use,
+ComponentCapsule<void> Function(Component) getComponentCapsule(
+  ComponentHandle use,
 ) {
-  final componentCapsules = use.value(<Component, Capsule<void>>{});
+  final componentCapsules = use.value(<Component, ComponentCapsule<void>>{});
 
   return (component) => componentCapsules.putIfAbsent(
       component,
@@ -236,7 +236,7 @@ Capsule<void> Function(Component) getComponentCapsule(
 
             // Rebuilding on parent rebuild
             if (!component.rootNode) {
-              use(getRichNodeCapsule)(component._parent.richNode);
+              getRichNodeCapsule(use)(component._parent.richNode);
             }
 
             final parentNode = component._parentNode;
@@ -249,17 +249,19 @@ Capsule<void> Function(Component) getComponentCapsule(
               },
             );
 
-            for (final child in use(component.build)) {
+            component.build(use);
+
+            for (final child in component.build(use)) {
               child._setParent(component);
-              use(getRichNodeCapsule)(child)(use);
+              getRichNodeCapsule(use)(child)(use);
             }
           });
 }
 
-Capsule<void> Function(DomNode) getDomCapsule(
-  CapsuleHandle use,
+ComponentCapsule<void> Function(DomNode) getDomCapsule(
+  ComponentHandle use,
 ) {
-  final domCapsules = use.value(<DomNode, Capsule<void>>{});
+  final domCapsules = use.value(<DomNode, ComponentCapsule<void>>{});
 
   return (dom) => domCapsules.putIfAbsent(
       dom,
