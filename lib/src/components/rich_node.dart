@@ -1,16 +1,20 @@
 part of 'component.dart';
 
 /// Represents a node in the [Component] tree.
-sealed class RichNode {
+sealed class RichNode with EquatableMixin {
   RichNode();
 
   bool get isComponent => this is ComponentNode;
 
   bool get isDom => this is DomNode;
 
-  void mount(Component parent);
+  ComponentNode get asComponent => this as ComponentNode;
 
-  void unmount(Component parent);
+  DomNode get asDom => this as DomNode;
+
+  // void mount(Component parent);
+
+  // void unmount(Component parent);
 }
 
 /// Represents a [Component] node in the Component tree.
@@ -20,14 +24,17 @@ class ComponentNode extends RichNode {
   final Component component;
 
   @override
-  void mount(Component parent) {
-    component._mount(parent);
-  }
+  List<Object?> get props => [component];
 
-  @override
-  void unmount(Component parent) {
-    component._unmount();
-  }
+  // @override
+  // void mount(Component parent) {
+  //   component._mount(parent);
+  // }
+
+  // @override
+  // void unmount(Component parent) {
+  //   component._unmount();
+  // }
 }
 
 /// Represents a leaf HTML node.
@@ -37,12 +44,15 @@ class DomNode extends RichNode {
   final Node node;
 
   @override
-  void mount(Component parent) {
-    parent.node.appendChild(node);
-  }
+  List<Object?> get props => [node];
 
-  @override
-  void unmount(Component parent) {
-    parent.node.removeChild(node);
-  }
+  // @override
+  // void mount(Component parent) {
+  //   parent.node.appendChild(node);
+  // }
+
+  // @override
+  // void unmount(Component parent) {
+  //   parent.node.removeChild(node);
+  // }
 }

@@ -21,8 +21,7 @@ class Root extends RootComponent {
   String get name => 'Root';
 
   @override
-  // Iterable<RichNode> build(CapsuleHandle use) {
-  Iterable<RichNode> build(ComponentHandle use) {
+  Iterable<RichNode> build(CapsuleHandle use) {
     final expandedMode = use.data(true);
 
     // use.callonce(() {
@@ -42,7 +41,7 @@ class Root extends RootComponent {
 class Header extends Component {
   Header({
     required this.expandedMode,
-  });
+  }) : super(key: 'header');
 
   final bool expandedMode;
 
@@ -50,8 +49,7 @@ class Header extends Component {
   String get name => 'Header';
 
   @override
-  // Iterable<RichNode> build(CapsuleHandle use) {
-  Iterable<RichNode> build(ComponentHandle use) {
+  Iterable<RichNode> build(CapsuleHandle use) {
     // Expanded mode
     if (expandedMode) {
       final counter = use.data(1);
@@ -80,7 +78,7 @@ class Header extends Component {
 class _InnerHeader extends Component {
   _InnerHeader({
     required this.count,
-  });
+  }) : super(key: 'inner-header');
 
   final int count;
 
@@ -88,7 +86,7 @@ class _InnerHeader extends Component {
   String get name => 'Inner header';
 
   @override
-  Iterable<RichNode> build(ComponentHandle use) {
+  Iterable<RichNode> build(CapsuleHandle use) {
     // final counter = use.data(1);
 
     // use.effect(

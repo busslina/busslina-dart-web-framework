@@ -1,4 +1,5 @@
 import 'package:busslina_dart_web_framework/lib.dart';
+import 'package:equatable/equatable.dart';
 import 'package:rearch/rearch.dart';
 import 'package:web/web.dart';
 
@@ -6,8 +7,12 @@ part 'rearch.dart';
 part 'rich_node.dart';
 part 'root_component.dart';
 
-abstract class Component implements ComponentSideEffectApi {
-  Component();
+abstract class Component with EquatableMixin implements ComponentSideEffectApi {
+  Component({
+    required this.key,
+  });
+
+  final String key;
 
   String get name;
 
@@ -44,6 +49,9 @@ abstract class Component implements ComponentSideEffectApi {
 
   bool get rootNode => false;
 
+  @override
+  List<Object?> get props => [key];
+
   /// Clears out the [Capsule] dependencies of this [Component].
   void _clearDependencies() {
     for (final dispose in _dependencyDisposers) {
@@ -52,71 +60,70 @@ abstract class Component implements ComponentSideEffectApi {
     _dependencyDisposers.clear();
   }
 
-  // Iterable<RichNode> build(CapsuleHandle use);
-  Iterable<RichNode> build(ComponentHandle use);
+  Iterable<RichNode> build(CapsuleHandle use);
 
   /// Mounts this component in the widget tree via his parent.
-  void _mount(Component parent) {
-    debug('_mount()');
+  // void _mount(Component parent) {
+  //   debug('_mount()');
 
-    if (_mounted) {
-      throw 'Already mounted';
-    }
+  //   if (_mounted) {
+  //     throw 'Already mounted';
+  //   }
 
-    if (_unmounted) {
-      throw 'Cannot mount. already unmounted';
-    }
+  //   if (_unmounted) {
+  //     throw 'Cannot mount. already unmounted';
+  //   }
 
-    _parent = parent;
+  //   _parent = parent;
 
-    if (!rootNode) {
-      _capsuleContainer = parent._capsuleContainer;
-    }
+  //   if (!rootNode) {
+  //     _capsuleContainer = parent._capsuleContainer;
+  //   }
 
-    _render();
+  //   _render();
 
-    _mounted = true;
-  }
+  //   _mounted = true;
+  // }
 
-  void _render() {
-    _parentNode.appendChild(node);
-    // _capsuleContainer.read(_mountChildrenCapsule);
-    _mountChildrenCapsule(_componentHandle);
-  }
+  // void _render() {
+  //   _parentNode.appendChild(node);
+  //   // _capsuleContainer.read(_mountChildrenCapsule);
+  //   _mountChildrenCapsule(_componentHandle);
+  // }
 
-  bool _mountingChildrenCapsule = false;
+  // bool _mountingChildrenCapsule = false;
 
   // void _mountChildrenCapsule(CapsuleHandle use) {
-  void _mountChildrenCapsule(ComponentHandle use) {
-    _mountingChildrenCapsule = true;
-    // _needsRebuild = false;
+  // void _mountChildrenCapsule(ComponentHandle use) {
+  //   _mountingChildrenCapsule = true;
+  //   // _needsRebuild = false;
 
-    debug('_mountChildrenCapsule() -- 1');
+  //   debug('_mountChildrenCapsule() -- 1');
 
-    final children = build(use);
-    final prevChildren = use.previous(children);
+  //   final children = build(use);
+  //   final prevChildren = use.previous(children);
 
-    debug(
-        '_mountChildrenCapsule() -- 2 -- ${children.length} -- ${prevChildren?.length}');
+  //   debug(
+  //       '_mountChildrenCapsule() -- 2 -- ${children.length} -- ${prevChildren?.length}');
 
-    // Unmounting previous children
-    if (prevChildren != null) {
-      for (final child in prevChildren) {
-        child.unmount(this);
-      }
-    }
+  //   // Unmounting previous children
+  //   if (prevChildren != null) {
+  //     for (final child in prevChildren) {
+  //       child.unmount(this);
+  //     }
+  //   }
 
-    debug('_mountChildrenCapsule() -- 3');
+  //   debug('_mountChildrenCapsule() -- 3');
 
-    // Mounting children
-    for (final child in children) {
-      child.mount(this);
-    }
+  //   // Mounting children
+  //   for (final child in children) {
+  //     child.mount(this);
+  //   }
 
-    debug('_mountChildrenCapsule() -- 4');
+  //   debug('_mountChildrenCapsule() -- 4');
 
-    _mountingChildrenCapsule = false;
-  }
+  //   _mountingChildrenCapsule = false;
+  // }
 
   void _unmount() {
     debug('_unmount()');
@@ -168,9 +175,9 @@ abstract class Component implements ComponentSideEffectApi {
       if (isCanceled) return;
     }
 
-    if (!_mountingChildrenCapsule) {
-      _mountChildrenCapsule(_componentHandle);
-    }
+    // if (!_mountingChildrenCapsule) {
+    //   _mountChildrenCapsule(_componentHandle);
+    // }
   }
 
   @override
@@ -185,12 +192,51 @@ abstract class Component implements ComponentSideEffectApi {
   void runTransaction(void Function() sideEffectTransaction) =>
       _capsuleContainer.runTransaction(sideEffectTransaction);
 
-  late final _componentHandle = _ComponentHandleImpl(
-    this,
-    _capsuleContainer,
-  );
-}
+  // late final _componentHandle = _ComponentHandleImpl(
+  //   this,
+  //   _capsuleContainer,
+  // );
 
-class ComponentTreeController {
-  ComponentTreeController();
+  void buildComponentCapsule(CapsuleHandle use) {
+    final childrenCapsules = use.value(<RichNode, Capsule<void>>{});
+
+    // Build self
+    use.callonce(() {
+      _parentNode.appendChild(node);
+    });
+
+    // Children
+    final currentChildren = build(use);
+    // final previousChildren = use.previous(currentChildren);
+    // final commonChildren = previousChildren == null
+    //     ? <RichNode>[]
+    //     : currentChildren.where((child) => previousChildren.contains(child));
+    // final newChildren = previousChildren == null
+    //     ? currentChildren
+    //     : currentChildren.where((child) => !previousChildren.contains(child));
+    // final removedChildren = previousChildren == null
+    //     ? <RichNode>[]
+    //     : previousChildren.where((child) => !currentChildren.contains(child));
+
+    // Capsule<void>? getNullableChildrenNodeCapsule(RichNode child) =>
+    //     childrenCapsules[child];
+
+    Capsule<void> getChildrenNodeCapsule(RichNode child) =>
+        childrenCapsules.putIfAbsent(
+            child,
+            () => (use) {
+                  // Rebuilding on parent rebuild
+                  use(buildComponentCapsule);
+
+                  if (child.isComponent) {
+                    use(child.asComponent.component.buildComponentCapsule);
+                  } else {
+                    node.appendChild(child.asDom.node);
+                  }
+                });
+
+    for (final child in currentChildren) {
+      use(getChildrenNodeCapsule(child));
+    }
+  }
 }

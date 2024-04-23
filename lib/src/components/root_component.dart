@@ -1,7 +1,7 @@
 part of 'component.dart';
 
 abstract class RootComponent extends Component {
-  RootComponent() {
+  RootComponent({super.key = 'root'}) {
     if (_instantiated) {
       throw ('RootComponent already created');
     }
@@ -23,7 +23,8 @@ abstract class RootComponent extends Component {
 
   void mount(Node mountPoint) {
     this.mountPoint = mountPoint;
-    _mount(this);
+    // _mount(this);
     // _capsuleContainer.read(_mountChildrenCapsule);
+    _capsuleContainer.read(buildComponentCapsule);
   }
 }
