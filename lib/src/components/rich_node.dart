@@ -57,7 +57,7 @@ class DomNode extends RichNode {
 
   final Node node;
 
-  late final Component _parent;
+  late Component _parent;
 
   @override
   List<Object?> get props => [node];

@@ -89,7 +89,7 @@ class _InnerHeader extends Component {
   // TODO: implement props
   List<Object?> get props => [
         ...super.props,
-        count,
+        // count,
       ];
 
   @override

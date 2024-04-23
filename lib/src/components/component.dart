@@ -209,8 +209,10 @@ Capsule<void> Function(RichNode) getComponentCapsule(
       () => (use) {
             final firstBuild = use.previous(false) ?? true;
 
-            print(
-                'Capsule (${component.typeAsString}) -- ${component.name} -- First: $firstBuild');
+            void debug(String msg) => print(
+                'Capsule (${component.typeAsString}) -- ${component.name} -- $msg');
+
+            debug('First: $firstBuild');
 
             // (A) Component node
             if (component.isComponent) {
