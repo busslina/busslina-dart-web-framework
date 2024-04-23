@@ -6,4 +6,6 @@ extension HTMLElementStyleExtension on HTMLElement {
     ..height = '100%';
 
   void textAlignCenter() => style.textAlign = 'center';
+
+  void block() => style.display = 'block';
 }

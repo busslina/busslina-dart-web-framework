@@ -28,7 +28,7 @@ abstract class RootComponent extends Component {
     // _capsuleContainer.read(_mountChildrenCapsule);
     // _capsuleContainer.read(buildComponentCapsule);
     print('ROOT -- 2');
-    final capsule = _capsuleContainer.read(getComponentCapsule)(richNode);
+    final capsule = _capsuleContainer.read(getRichNodeCapsule)(richNode);
     _capsuleContainer.read(capsule);
     print('ROOT -- 3');
   }

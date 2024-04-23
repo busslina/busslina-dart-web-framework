@@ -50,6 +50,8 @@ class Header extends Component {
 
   @override
   Iterable<RichNode> build(CapsuleHandle use) {
+    final loading = use(_loadingCapsule);
+
     // Expanded mode
     if (expandedMode) {
       final counter = use.data(1);
@@ -58,13 +60,25 @@ class Header extends Component {
         () {
           return Timer.periodic(const Duration(seconds: 10), (_) {
             counter.value++;
-            print('Counter: ${counter.value}');
+            // print('Counter: ${counter.value}');
+            // rebuilder();
           }).cancel;
         },
         [],
       );
 
       return [
+        // Title
+        (HTMLHeadingElement.h1()
+              ..text = 'Busslina Dart Web Framework'
+              ..textAlignCenter())
+            .richNode,
+
+        (HTMLLabelElement()
+              ..text = 'Loading 1: ${loading.value}'
+              ..textAlignCenter())
+            .richNode,
+
         _InnerHeader(count: counter.value).richNode,
       ];
     }
@@ -89,7 +103,7 @@ class _InnerHeader extends Component {
   // TODO: implement props
   List<Object?> get props => [
         ...super.props,
-        // count,
+        count,
       ];
 
   @override
@@ -98,6 +112,8 @@ class _InnerHeader extends Component {
   @override
   Iterable<RichNode> build(CapsuleHandle use) {
     print('_InnerHeader.build() -- $count');
+
+    final loading = use(_loadingCapsule);
     // final counter = use.data(1);
 
     // use.effect(
@@ -109,13 +125,11 @@ class _InnerHeader extends Component {
     //   [],
     // );
 
-    return [
-      // Title
-      (HTMLHeadingElement.h1()
-            ..text = 'Busslina Dart Web Framework'
-            ..textAlignCenter())
-          .richNode,
+    // if (count == 3) {
+    //   loading.value = true;
+    // }
 
+    return [
       // Subtitle
       (HTMLHeadingElement.h3()
             ..text = 'Using ReArch'
@@ -125,8 +139,17 @@ class _InnerHeader extends Component {
       // Counter
       (HTMLLabelElement()
             ..text = 'Count: $count'
-            ..textAlignCenter())
+            ..textAlignCenter()
+            ..block())
+          .richNode,
+
+      (HTMLLabelElement()
+            ..text = 'Loading 2: ${loading.value}'
+            ..textAlignCenter()
+            ..block())
           .richNode,
     ];
   }
 }
+
+ValueWrapper<bool> _loadingCapsule(CapsuleHandle use) => use.data(false);

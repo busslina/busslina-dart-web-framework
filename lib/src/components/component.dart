@@ -1,3 +1,5 @@
+import 'dart:js_interop';
+
 import 'package:busslina_dart_web_framework/lib.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rearch/rearch.dart';
@@ -8,6 +10,7 @@ part 'rich_node.dart';
 part 'root_component.dart';
 
 abstract class Component with EquatableMixin implements ComponentSideEffectApi {
+// abstract class Component implements ComponentSideEffectApi {
   Component({
     required this.key,
   });
@@ -199,7 +202,7 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
   // );
 }
 
-Capsule<void> Function(RichNode) getComponentCapsule(
+Capsule<void> Function(RichNode) getRichNodeCapsule(
   CapsuleHandle use,
 ) {
   final componentCapsules = use.value(<RichNode, Capsule<void>>{});
@@ -207,50 +210,98 @@ Capsule<void> Function(RichNode) getComponentCapsule(
   return (component) => componentCapsules.putIfAbsent(
       component,
       () => (use) {
-            final firstBuild = use.previous(false) ?? true;
-
-            void debug(String msg) => print(
-                'Capsule (${component.typeAsString}) -- ${component.name} -- $msg');
-
-            debug('First: $firstBuild');
-
             // (A) Component node
             if (component.isComponent) {
-              final current = component.asComponent.component;
-
-              // Rebuilding on parent rebuild
-              if (!current.rootNode) {
-                use(getComponentCapsule)(current._parent.richNode);
-              }
-
-              use.effect(
-                () {
-                  current._parentNode.appendChild(current.node);
-                  return () => current._parentNode.removeChild(current.node);
-                },
+              return use(getComponentCapsule)(component.asComponent.component)(
+                use,
               );
-
-              final children = use(current.build);
-
-              for (final child in children) {
-                // if (firstBuild) {
-                //   child._setParent(current);
-                // }
-                child._setParent(current);
-                use(getComponentCapsule)(child)(use);
-              }
             }
 
             // (B) DOM node
             else {
-              final current = component.asDom;
-              final node = current.node;
-
-              if (node is HTMLLabelElement) {
-                debug('Text: ${node.textContent}');
-              }
-
-              current._parent.node.appendChild(node);
+              return use(getDomCapsule)(component.asDom)(use);
             }
+          });
+}
+
+Capsule<void> Function(Component) getComponentCapsule(
+  CapsuleHandle use,
+) {
+  final componentCapsules = use.value(<Component, Capsule<void>>{});
+
+  return (component) => componentCapsules.putIfAbsent(
+      component,
+      () => (use) {
+            final firstBuild = use.previous(false) ?? true;
+
+            void debug(String msg) =>
+                print('Capsule (Component) -- ${component.name} -- $msg');
+
+            debug('First: $firstBuild');
+
+            // final current = component.component;
+
+            // Rebuilding on parent rebuild
+            if (!component.rootNode) {
+              use(getRichNodeCapsule)(component._parent.richNode);
+            }
+
+            use.effect(
+              () {
+                component._parentNode.appendChild(component.node);
+                return () => component._parentNode.removeChild(component.node);
+              },
+            );
+
+            final children = use(component.build);
+
+            for (final child in children) {
+              child._setParent(component);
+              use(getRichNodeCapsule)(child)(use);
+            }
+          });
+}
+
+Capsule<void> Function(DomNode) getDomCapsule(
+  CapsuleHandle use,
+) {
+  final domCapsules = use.value(<DomNode, Capsule<void>>{});
+
+  return (dom) => domCapsules.putIfAbsent(
+      dom,
+      () => (use) {
+            final firstBuild = use.previous(false) ?? true;
+
+            void debug(String msg) =>
+                print('Capsule (${dom.typeAsString}) -- ${dom.name} -- $msg');
+
+            debug('First: $firstBuild');
+
+            final current = dom.asDom;
+            final node = current.node;
+
+            final previousParentNode = use.previous(current._parent.node);
+            final previousNode = use.previous(node);
+
+            debug('Previous: $previousNode');
+            debug('Current: $node');
+            debug('Equals: ${node.isEqualNode(previousNode)}');
+
+            if (firstBuild) {
+              current._parent.node.appendChild(node);
+            } else if (!node.isEqualNode(previousNode)) {
+              previousParentNode!.removeChild(previousNode!);
+              current._parent.node.appendChild(node);
+              // } else {
+              //   previousParentNode!.removeChild(previousNode!);
+              //   current._parent.node.appendChild(node);
+            }
+
+            // use.effect(
+            //   () {
+            //     current._parent.node.appendChild(node);
+            //     return () => current._parent.node.removeChild(node);
+            //   },
+            // );
           });
 }
