@@ -209,11 +209,11 @@ Capsule<void> Function(RichNode) getComponentCapsule(
       () => (use) {
             final firstBuild = use.previous(false) ?? true;
 
+            print(
+                'Capsule (${component.typeAsString}) -- ${component.name} -- First: $firstBuild');
+
             // (A) Component node
             if (component.isComponent) {
-              print(
-                  'Capsule (Component) -- ${component.name} -- First: $firstBuild');
-
               final current = component.asComponent.component;
 
               // Rebuilding on parent rebuild
@@ -241,14 +241,9 @@ Capsule<void> Function(RichNode) getComponentCapsule(
 
             // (B) DOM node
             else {
-              print('Capsule (DOM) -- ${component.name} -- First: $firstBuild');
               final current = component.asDom;
               final node = current.node;
               current._parent.node.appendChild(node);
-
-              if (node is HTMLLabelElement) {
-                print('Label -- ${node.textContent}');
-              }
             }
           });
 }

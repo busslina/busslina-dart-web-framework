@@ -16,6 +16,8 @@ sealed class RichNode with EquatableMixin {
       ? asComponent.component.name
       : asDom.node.runtimeType.toString();
 
+  String get typeAsString => isComponent ? 'Component' : 'DOM';
+
   // void mount(Component parent);
 
   // void unmount(Component parent);
