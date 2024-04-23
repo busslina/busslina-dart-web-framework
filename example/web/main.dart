@@ -22,31 +22,55 @@ class Root extends RootComponent {
 
   @override
   Iterable<RichNode> build(CapsuleHandle use) {
+    final expandedMode = use.data(true);
+
+    use.callonce(() {
+      Timer(const Duration(seconds: 15), () {
+        expandedMode.value = false;
+      });
+    });
+
     return [
-      Header().richNode,
+      Header(
+        expandedMode: expandedMode.value,
+      ).richNode,
     ];
   }
 }
 
 class Header extends Component {
+  Header({
+    required this.expandedMode,
+  });
+
+  final bool expandedMode;
+
   @override
   String get name => 'Header';
 
   @override
   Iterable<RichNode> build(CapsuleHandle use) {
-    final counter = use.data(1);
+    // Expanded mode
+    if (expandedMode) {
+      final counter = use.data(1);
 
-    use.effect(
-      () {
-        return Timer.periodic(const Duration(seconds: 10), (_) {
-          counter.value++;
-        }).cancel;
-      },
-      [],
-    );
+      use.effect(
+        () {
+          return Timer.periodic(const Duration(seconds: 10), (_) {
+            counter.value++;
+          }).cancel;
+        },
+        [],
+      );
 
+      return [
+        _InnerHeader(count: counter.value).richNode,
+      ];
+    }
+
+    // Collapsed mode
     return [
-      _InnerHeader(count: counter.value).richNode,
+      (HTMLHeadingElement.h1()..text = 'Collapsed').richNode,
     ];
   }
 }

@@ -52,15 +52,6 @@ abstract class Component implements ComponentSideEffectApi {
     _dependencyDisposers.clear();
   }
 
-  // void _renderCapsule(CapsuleHandle use) {
-  //   // Rebuilding when parent rebuilds
-  //   use(_parent._renderCapsule);
-
-  //   final children = build(use);
-  // }
-
-  // Node build(ComponentHandle use);
-  // Iterable<RichNode> build(ComponentHandle use);
   Iterable<RichNode> build(CapsuleHandle use);
 
   /// Mounts this component in the widget tree via his parent.
@@ -82,11 +73,6 @@ abstract class Component implements ComponentSideEffectApi {
     }
 
     _parentNode.appendChild(node);
-
-    // for (final richNode in build(_componentHandle)) {
-    // for (final richNode in _capsuleContainer.read(build)) {
-    //   richNode.mount(this);
-    // }
 
     _capsuleContainer.read(_mountChildrenCapsule);
 
