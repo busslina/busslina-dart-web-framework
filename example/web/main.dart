@@ -24,13 +24,17 @@ class Root extends RootComponent {
   @override
   Iterable<RichNode> build(ComponentHandle use) {
     return [
-      Header().richNode,
+      Header(parentKey: key).richNode,
     ];
   }
 }
 
 class Header extends Component {
-  Header() : super(key: 'header');
+  Header({
+    required super.parentKey,
+  }) : super(
+          key: 'header',
+        );
 
   @override
   String get name => 'Header';
@@ -57,13 +61,17 @@ class Header extends Component {
             ..textAlignCenter())
           .richNode(key: 'ttile'),
 
-      _InnerHeader(count: counter.value).richNode,
+      _InnerHeader(
+        parentKey: key,
+        count: counter.value,
+      ).richNode,
     ];
   }
 }
 
 class _InnerHeader extends Component {
   _InnerHeader({
+    required super.parentKey,
     required this.count,
   }) : super(key: 'inner-header');
 

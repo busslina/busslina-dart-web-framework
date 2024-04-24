@@ -6,17 +6,28 @@ part 'rearch.dart';
 part 'rich_node.dart';
 part 'root_component.dart';
 
+// typedef ComponentBuilder = Component Function({
+//   required String parentKey,
+// });
+
 abstract class Component with EquatableMixin implements ComponentSideEffectApi {
 // abstract class Component implements ComponentSideEffectApi {
   Component({
-    required this.key,
-  });
+    required String parentKey,
+    required String key,
+  })  : _parentKey = parentKey,
+        _key = key {
+    _debug('Constructor');
+  }
 
-  final String key;
+  final String _parentKey;
+  final String _key;
 
   String get name;
 
   final debugId = DateTime.now().microsecondsSinceEpoch;
+
+  String get key => '$_parentKey$_key';
 
   // bool _mounted = false;
 

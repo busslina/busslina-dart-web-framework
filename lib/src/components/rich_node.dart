@@ -39,27 +39,24 @@ sealed class RichNode with EquatableMixin {
 
 /// Represents a [Component] node in the Component tree.
 class ComponentNode extends RichNode {
-  ComponentNode(this.component) : super(component.key);
+  ComponentNode(
+    this.component,
+  ) : super(
+          component.key,
+        );
 
   final Component component;
 
   @override
   List<Object?> get props => [key];
-
-  // @override
-  // void mount(Component parent) {
-  //   component._mount(parent);
-  // }
-
-  // @override
-  // void unmount(Component parent) {
-  //   component._unmount();
-  // }
 }
 
 /// Represents a leaf HTML node.
 class DomNode extends RichNode {
-  DomNode(super.key, this.node);
+  DomNode(
+    super.key,
+    this.node,
+  );
 
   final Node node;
 
@@ -67,14 +64,4 @@ class DomNode extends RichNode {
 
   @override
   List<Object?> get props => [key];
-
-  // @override
-  // void mount(Component parent) {
-  //   parent.node.appendChild(node);
-  // }
-
-  // @override
-  // void unmount(Component parent) {
-  //   parent.node.removeChild(node);
-  // }
 }

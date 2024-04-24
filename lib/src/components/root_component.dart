@@ -1,7 +1,10 @@
 part of 'component.dart';
 
 abstract class RootComponent extends Component {
-  RootComponent({super.key = 'root'}) {
+  RootComponent({
+    super.parentKey = '',
+    super.key = 'root',
+  }) {
     if (_instantiated) {
       throw ('RootComponent already created');
     }
