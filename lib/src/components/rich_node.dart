@@ -3,7 +3,9 @@ part of 'component.dart';
 /// Represents a node in the [Component] tree.
 // sealed class RichNode {
 sealed class RichNode with EquatableMixin {
-  RichNode();
+  RichNode(this.key);
+
+  final String key;
 
   bool get isComponent => this is ComponentNode;
 
@@ -30,16 +32,19 @@ sealed class RichNode with EquatableMixin {
       asDom._parent = parent;
     }
   }
+
+  @override
+  String toString() => key;
 }
 
 /// Represents a [Component] node in the Component tree.
 class ComponentNode extends RichNode {
-  ComponentNode(this.component);
+  ComponentNode(this.component) : super(component.key);
 
   final Component component;
 
   @override
-  List<Object?> get props => [component];
+  List<Object?> get props => [key];
 
   // @override
   // void mount(Component parent) {
@@ -54,14 +59,14 @@ class ComponentNode extends RichNode {
 
 /// Represents a leaf HTML node.
 class DomNode extends RichNode {
-  DomNode(this.node);
+  DomNode(super.key, this.node);
 
   final Node node;
 
   late Component _parent;
 
   @override
-  List<Object?> get props => [node];
+  List<Object?> get props => [key];
 
   // @override
   // void mount(Component parent) {

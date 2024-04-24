@@ -176,7 +176,11 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
       if (isCanceled) return;
     }
 
-    print('Component.rebuild() -- $name');
+    print('Component.rebuild() -- $name -- _rendering: $_rendering');
+
+    if (!_rendering) _render();
+
+    // _render();
 
     // _capsuleContainer.read(getRichNodeCapsule)();
 
@@ -213,28 +217,76 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
     this,
     _capsuleContainer,
   );
-}
 
-ComponentCapsule<void> Function(RichNode) getRichNodeCapsule(
-  ComponentHandle use,
-) {
-  final richNodeCapsules = use.value(<RichNode, ComponentCapsule<void>>{});
+  void _debug(String msg) => print('Component -- $name -- $msg');
 
-  return (component) => richNodeCapsules.putIfAbsent(
-      component,
-      () => (use) {
-            // (A) Component node
-            if (component.isComponent) {
-              return getComponentCapsule(use)(component.asComponent.component)(
-                use,
+  bool _rendering = false;
+
+  void _render() {
+    _rendering = true;
+    _renderCapsule(_componentHandle);
+    _rendering = false;
+  }
+
+  void _renderCapsule(ComponentHandle use) {
+    final firstBuild = use.previous(false) ?? true;
+
+    _debug('_renderCapsule() -- firstBuild: $firstBuild');
+
+    final parentNode = _parentNode;
+
+    // Mounting self node
+    use.effect(
+      () {
+        parentNode.appendChild(node);
+        return () => parentNode.removeChild(node);
+      },
+    );
+
+    // Building children
+    for (final childNode in build(use)) {
+      childNode._setParent(this);
+
+      // Child component (recursive, uses own handle)
+      if (childNode.isComponent) {
+        final childComponent = (childNode.asComponent.component
+          .._capsuleContainer = _capsuleContainer);
+
+        getComponentCapsule(use)(childComponent)(
+            childComponent._componentHandle);
+      }
+
+      // Child DOM
+      else {
+        _debug('_renderCapsule() -- DOM child');
+        _renderDomChildCapsule(use)(childNode.asDom)(use);
+      }
+    }
+  }
+
+  ComponentCapsule<void> Function(DomNode) _renderDomChildCapsule(
+      ComponentHandle use) {
+    final domChildCapsules = use.value(<DomNode, ComponentCapsule<void>>{});
+
+    return (domNode) => domChildCapsules.putIfAbsent(
+        domNode,
+        () => (use) {
+              final firstBuild = use.previous(false) ?? true;
+
+              _debug(
+                  '_renderDomChildCapsule() -- $domNode -- firstBuild: $firstBuild');
+
+              final parentNode = domNode._parent.node;
+              final node = domNode.node;
+
+              use.effect(
+                () {
+                  parentNode.appendChild(node);
+                  return () => parentNode.removeChild(node);
+                },
               );
-            }
-
-            // (B) DOM node
-            else {
-              return getDomCapsule(use)(component.asDom)(use);
-            }
-          });
+            });
+  }
 }
 
 ComponentCapsule<void> Function(Component) getComponentCapsule(
@@ -245,70 +297,11 @@ ComponentCapsule<void> Function(Component) getComponentCapsule(
   return (component) => componentCapsules.putIfAbsent(
       component,
       () => (use) {
-            void debug(String msg) =>
-                print('Capsule (Component) -- ${component.name} -- $msg');
-
-            debug('');
-
             // Rebuilding on parent rebuild
             if (!component.rootNode) {
-              getRichNodeCapsule(use)(component._parent.richNode);
+              getComponentCapsule(use)(component._parent);
             }
 
-            final parentNode = component._parentNode;
-            final node = component.node;
-
-            use.effect(
-              () {
-                parentNode.appendChild(node);
-                return () => parentNode.removeChild(node);
-              },
-            );
-
-            for (final child in component.build(use)) {
-              child._setParent(component);
-
-              final ComponentHandle childHandle;
-
-              // Child component (uses own handle)
-              if (child.isComponent) {
-                final childComponent = (child.asComponent.component
-                  .._capsuleContainer = component._capsuleContainer);
-                childHandle = childComponent._componentHandle;
-              }
-
-              // Child DOM (uses parent handle)
-              else {
-                childHandle = use;
-              }
-
-              getRichNodeCapsule(use)(child)(childHandle);
-            }
-          });
-}
-
-ComponentCapsule<void> Function(DomNode) getDomCapsule(
-  ComponentHandle use,
-) {
-  final domCapsules = use.value(<DomNode, ComponentCapsule<void>>{});
-
-  return (dom) => domCapsules.putIfAbsent(
-      dom,
-      () => (use) {
-            void debug(String msg) =>
-                print('Capsule (${dom.typeAsString}) -- ${dom.name} -- $msg');
-
-            debug('');
-
-            final domNode = dom.asDom;
-            final parentNode = domNode._parent.node;
-            final node = domNode.node;
-
-            use.effect(
-              () {
-                parentNode.appendChild(node);
-                return () => parentNode.removeChild(node);
-              },
-            );
+            component._render();
           });
 }

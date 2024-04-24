@@ -43,7 +43,7 @@ class Header extends Component {
 
     use.effect(
       () {
-        return Timer.periodic(const Duration(seconds: 5), (_) {
+        return Timer.periodic(const Duration(seconds: 15), (_) {
           counter.value++;
         }).cancel;
       },
@@ -55,7 +55,7 @@ class Header extends Component {
       (HTMLHeadingElement.h1()
             ..text = 'Busslina Dart Web Framework'
             ..textAlignCenter())
-          .richNode,
+          .richNode(key: 'ttile'),
 
       _InnerHeader(count: counter.value).richNode,
     ];
@@ -85,14 +85,14 @@ class _InnerHeader extends Component {
       (HTMLHeadingElement.h3()
             ..text = 'Using ReArch'
             ..textAlignCenter())
-          .richNode,
+          .richNode(key: 'subtitle'),
 
       // Counter
       (HTMLLabelElement()
             ..text = 'Count: $count'
             ..textAlignCenter()
             ..block())
-          .richNode,
+          .richNode(key: 'counter'),
     ];
   }
 }
