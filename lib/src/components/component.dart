@@ -300,6 +300,7 @@ abstract class Component with EquatableMixin implements ComponentSideEffectApi {
   }
 }
 
+/// Global.
 ComponentCapsule<void> Function(Component) getComponentCapsule(
   ComponentHandle use,
 ) {
